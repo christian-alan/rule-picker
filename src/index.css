@@ -1,0 +1,251 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Helvetica, sans-serif;
+}
+
+/* The mascot's colour. Registered so a swap fades the pin, glass and body together. */
+@property --fz {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #9fc8f3;
+}
+
+:root {
+  /* Under-damped spring sampled into CSS linear(): slight overshoot, quick settle. */
+  --spring: linear(0, 0.036, 0.111, 0.211, 0.339, 0.458, 0.573, 0.691, 0.784, 0.864, 0.93, 0.987, 1.025, 1.052, 1.07, 1.079, 1.081, 1.077, 1.071, 1.063, 1.054, 1.043, 1.034, 1.025, 1.017, 1.011, 1.005, 1.001, 0.998, 0.996, 0.994, 0.994, 0.994, 0.994, 0.994, 0.995, 0.996, 0.997, 0.997, 0.998, 1);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ───────────── Variant tokens ───────────── */
+
+.stage[data-variant='classic'] {
+  --stage: #f6f6f6;
+  --ink: #2f2a3a;
+  --muted: #8a8a8a;
+  --tick: #d6d6d6;
+  --digit: #2f2a3a;
+  --digit-shadow: none;
+  --limb: #3a3346;
+  --ring: #0a84ff;
+  --surface-top: #fdfdfd;
+  --surface-bot: #f5f5f5;
+  --edge: rgba(0, 0, 0, 0.085);
+  --hi: #ffffff;
+  --shadow: rgba(0, 0, 0, 0.07);
+  --btn: #0b0b0b;
+  --btn-hi: rgba(255, 255, 255, 0.1);
+  --btn-ink: #ffffff;
+  background: var(--stage);
+}
+
+@media (prefers-color-scheme: dark) {
+  .stage[data-variant='classic'] {
+    --stage: #111111;
+    --ink: #ededed;
+    --muted: #7c7c7c;
+    --tick: #3a3a3a;
+    --limb: #ecebf2;
+    --surface-top: #202020;
+    --surface-bot: #1a1a1a;
+    --edge: rgba(255, 255, 255, 0.08);
+    --hi: rgba(255, 255, 255, 0.06);
+    --shadow: rgba(0, 0, 0, 0.45);
+    --btn: #f4f4f4;
+    --btn-hi: rgba(255, 255, 255, 0.6);
+    --btn-ink: #0b0b0b;
+  }
+}
+
+.stage[data-variant='glass'] {
+  --ink: #ffffff;
+  --muted: rgba(255, 255, 255, 0.72);
+  --tick: rgba(255, 255, 255, 0.36);
+  --digit: #ffffff;
+  --digit-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --limb: #ecebf2;
+  --ring: rgba(255, 255, 255, 0.85);
+  --btn-ink: #111111;
+  background:
+    radial-gradient(80% 70% at 50% 30%, #3d4045 0%, rgba(61, 64, 69, 0) 70%),
+    linear-gradient(170deg, #2e3034 0%, #232427 60%, #1b1c1e 100%);
+}
+
+.stage {
+  color: var(--ink);
+  transition: background 0.4s ease;
+}
+
+/* ───────────── Ruler ───────────── */
+
+.ruler {
+  transition: --fz 360ms ease;
+}
+
+.tick {
+  background: var(--tick);
+}
+
+/* Classic: one shape, pill flowing into the stem */
+.pin {
+  fill: var(--fz);
+  filter: drop-shadow(4px 8px 9px rgba(47, 42, 58, 0.14)) drop-shadow(0 1px 2px rgba(47, 42, 58, 0.08));
+}
+.pin-hi {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.5);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+}
+
+/* Liquid Glass: a tinted glass capsule hanging on a glass rod */
+.capsule {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--fz) 50%, transparent),
+    color-mix(in srgb, var(--fz) 16%, transparent)
+  );
+  -webkit-backdrop-filter: blur(14px) saturate(180%) brightness(1.06);
+  backdrop-filter: blur(14px) saturate(180%) brightness(1.06);
+  box-shadow:
+    inset 0 1.5px 1px rgba(255, 255, 255, 0.75),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.22),
+    inset 1.5px 0 1px rgba(255, 255, 255, 0.18),
+    inset -1.5px 0 1px rgba(255, 255, 255, 0.18),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.4),
+    inset 0 0 18px rgba(255, 255, 255, 0.1),
+    0 14px 30px -10px rgba(0, 0, 0, 0.6),
+    0 2px 6px rgba(0, 0, 0, 0.2);
+}
+.rod {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--fz) 55%, transparent),
+    rgba(255, 255, 255, 0.95) 45%,
+    color-mix(in srgb, var(--fz) 60%, transparent)
+  );
+  box-shadow:
+    0 0 0 0.5px rgba(255, 255, 255, 0.5),
+    3px 8px 14px rgba(0, 0, 0, 0.45);
+}
+
+/* ───────────── Digits ───────────── */
+
+.digits {
+  transition: filter 180ms ease-out;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 22%, #000 78%, transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0, #000 22%, #000 78%, transparent 100%);
+}
+.digit {
+  color: var(--digit);
+  text-shadow: var(--digit-shadow);
+}
+.roll {
+  transition: transform 460ms var(--spring);
+}
+
+/* ───────────── Mascot ───────────── */
+
+.fz-body {
+  fill: var(--fz);
+}
+.limb {
+  stroke: var(--limb);
+}
+.lean {
+  transform-origin: 50% 84%;
+  transition: transform 320ms var(--spring);
+}
+.spin {
+  transition: transform 620ms cubic-bezier(0.3, 1.25, 0.45, 1);
+}
+.press {
+  transform-origin: 50% 84%;
+  transition: transform 160ms ease;
+}
+.mascot:active .press {
+  transform: scale(1.08, 0.9);
+}
+
+/* ───────────── Switcher (shared with Response Bar) ───────────── */
+
+.surface {
+  background: linear-gradient(180deg, var(--surface-top), var(--surface-bot));
+  box-shadow:
+    inset 0 0 0 1px var(--edge),
+    inset 0 1.5px 0 var(--hi),
+    0 10px 22px -6px var(--shadow),
+    0 2px 4px var(--shadow);
+}
+.stage[data-variant='glass'] .surface {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.07));
+  -webkit-backdrop-filter: blur(14px) saturate(180%) brightness(1.06);
+  backdrop-filter: blur(14px) saturate(180%) brightness(1.06);
+  box-shadow:
+    inset 0 1.5px 1px rgba(255, 255, 255, 0.75),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.22),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.4),
+    0 12px 30px -10px rgba(0, 0, 0, 0.55),
+    0 2px 6px rgba(0, 0, 0, 0.18);
+}
+
+.spec {
+  display: none;
+}
+.stage[data-variant='glass'] .spec {
+  display: block;
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(90% 120% at 12% -10%, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0) 55%),
+    radial-gradient(60% 90% at 95% 120%, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 60%);
+}
+
+.primary {
+  background: var(--btn);
+  color: var(--btn-ink);
+  box-shadow:
+    inset 0 1px 0 var(--btn-hi),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.35),
+    0 8px 18px -6px var(--shadow);
+}
+.stage[data-variant='glass'] .primary {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.74));
+  box-shadow:
+    inset 0 1.5px 1px #ffffff,
+    inset 0 -1px 1px rgba(255, 255, 255, 0.5),
+    0 12px 26px -8px rgba(0, 0, 0, 0.55);
+}
+
+/* ───────────── Layout scale ───────────── */
+
+.picker-scale {
+  zoom: 1.25;
+}
+@media (max-width: 760px) {
+  .picker-scale { zoom: 1; }
+}
+@media (max-width: 590px) {
+  .picker-scale { zoom: 0.9; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation: none !important;
+  }
+}
